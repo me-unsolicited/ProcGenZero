@@ -1,0 +1,5 @@
+python==3.7.0
+tensorflow~=2.0.0
+numpy~=1.17.3
+gym~=0.17.1
+procgen
