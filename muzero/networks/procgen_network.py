@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 from tensorflow_core.python.keras import regularizers
+from tensorflow_core.python.keras.layers import Conv2D
 from tensorflow_core.python.keras.layers.core import Dense, Flatten
 from tensorflow_core.python.keras.models import Sequential
 
@@ -24,7 +25,13 @@ class ProcGenNetwork(BaseNetwork):
         self.value_support_size = math.ceil(math.sqrt(max_value)) + 1
 
         regularizer = regularizers.l2(weight_decay)
-        representation_network = Sequential([Flatten(),
+        representation_network = Sequential([Conv2D(filters=8, kernel_size=8, strides=4, activation='relu',
+                                                    kernel_regularizer=regularizer),
+                                             Conv2D(filters=16, kernel_size=4, strides=2, activation='relu',
+                                                    kernel_regularizer=regularizer),
+                                             Conv2D(filters=16, kernel_size=3, strides=1, activation='relu',
+                                                    kernel_regularizer=regularizer),
+                                             Flatten(),
                                              Dense(hidden_neurons, activation='relu', kernel_regularizer=regularizer),
                                              Dense(representation_size, activation=representation_activation,
                                                    kernel_regularizer=regularizer)])
