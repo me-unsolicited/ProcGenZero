@@ -5,8 +5,10 @@ import tensorflow_core as tf
 
 from game.cartpole import CartPole
 from game.game import AbstractGame
+from game.procgen import ProcGen
 from networks.cartpole_network import CartPoleNetwork
 from networks.network import BaseNetwork, UniformNetwork
+from networks.procgen_network import ProcGenNetwork
 
 KnownBounds = collections.namedtuple('KnownBounds', ['min', 'max'])
 
@@ -107,6 +109,31 @@ def make_cartpole_config() -> MuZeroConfig:
                       'max_value': 500},
         network=CartPoleNetwork,
         action_space_size=2,
+        max_moves=1000,
+        discount=0.99,
+        dirichlet_alpha=0.25,
+        num_simulations=11,  # Odd number perform better in eval mode
+        batch_size=512,
+        td_steps=10,
+        visit_softmax_temperature_fn=visit_softmax_temperature,
+        lr=0.05)
+
+
+def make_procgen_config() -> MuZeroConfig:
+    def visit_softmax_temperature(num_moves, training_steps):
+        return 1.0
+
+    return MuZeroConfig(
+        game=ProcGen,
+        nb_training_loop=50,
+        nb_episodes=20,
+        nb_epochs=20,
+        network_args={'action_size': 15,
+                      'state_size': 4,
+                      'representation_size': 4,
+                      'max_value': 500},
+        network=ProcGenNetwork,
+        action_space_size=15,
         max_moves=1000,
         discount=0.99,
         dirichlet_alpha=0.25,
